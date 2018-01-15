@@ -24,7 +24,7 @@
         android:scaleX="0.100000"
         android:scaleY="-0.100000">
         <path
-            android:fillColor="@color/icon_color_dark"
+            android:fillColor="#99000000"
             android:strokeWidth="1"
             android:pathData="M242 717 c-23 -23 -42 -49 -42 -58 0 -8 65 -79 145 -159 l145 -145 -56 -56 c-88
 -89 -84 -93 120 -97 147 -2 171 0 188 15 17 15 18 31 16 187 -4 205 -8 210 -94 125

@@ -19,7 +19,7 @@
         android:viewportWidth="96.0"
         android:viewportHeight="96.0">
     <path
-        android:fillColor="@color/icon_color_dark"
+        android:fillColor="#99000000"
         android:pathData="M74,22.3c0-2.4-1.9-4.3-4.3-4.3H26.3c-2.4,0-4.3,1.9-4.3,4.3c0,0.9,0.3,1.8,0.8,2.5l0,0L42,59.5V66v4v4
 c0,2.2,1.8,4,4,4h4c2.2,0,4-1.8,4-4v-4v-4v-6.5l19.3-34.9l0,0C73.8,23.9,74,23.2,74,22.3z
 M62.8,27.8l-3,5.9c0,0.1-0.1,0.2-0.1,0.3

@@ -20,10 +20,10 @@
         android:viewportHeight="96.0">
     <group>
         <path
-            android:fillColor="@color/icon_color_dark"
+            android:fillColor="#99000000"
             android:pathData="M74,20h-2H24h-2c-3.3,0-6,2.7-6,6v12c0,3.3,2.7,6,6,6h52c3.3,0,6-2.7,6-6V26C80,22.7,77.3,20,74,20z" />
         <path
-            android:fillColor="@color/icon_color_dark"
+            android:fillColor="#99000000"
             android:pathData="M74,52H22c-3.3,0-6,2.7-6,6v12c0,3.3,2.7,6,6,6h2h48h2c3.3,0,6-2.7,6-6V58C80,54.7,77.3,52,74,52z" />
     </group>
 </vector>
