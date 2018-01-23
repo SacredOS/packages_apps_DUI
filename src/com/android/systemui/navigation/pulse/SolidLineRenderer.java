@@ -25,6 +25,7 @@ package com.android.systemui.navigation.pulse;
 import android.animation.ValueAnimator;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -36,6 +37,7 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
 
+import com.android.systemui.R;
 import com.android.systemui.navigation.pulse.PulseController.PulseObserver;
 import com.android.systemui.navigation.utils.ColorAnimator;
 
@@ -45,6 +47,7 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
     private ValueAnimator[] mValueAnimators;
     private float[] mFFTPoints;
     private int mColor;
+    private int mAccentColor;
 
     private byte rfk, ifk;
     private int dbValue;
@@ -55,6 +58,7 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
     private int mWidth, mHeight, mUnits;
 
     private boolean mIsValidStream;
+    private boolean mPulseAccentColorEnabled;
     private boolean mLavaLampEnabled;
     private CMRendererObserver mObserver;
     private ColorAnimator mLavaLamp;
@@ -156,7 +160,7 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
         mIsValidStream = isValid;
         if (isValid) {
             onSizeChanged(0, 0, 0, 0);
-            if (mLavaLampEnabled) {
+            if (mLavaLampEnabled && !mPulseAccentColorEnabled) {
                 mLavaLamp.start();
             }
         }
@@ -207,7 +211,7 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
 
     @Override
     public void onColorChanged(ColorAnimator colorAnimator, int color) {
-        mPaint.setColor(color);
+        mPaint.setColor(mPulseAccentColorEnabled ? mAccentColor : color);
     }
 
     @Override
@@ -216,7 +220,7 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
 
     @Override
     public void onStopAnimation(ColorAnimator colorAnimator, int lastColor) {
-        mPaint.setColor(mColor);
+        mPaint.setColor(mPulseAccentColorEnabled ? mAccentColor : mColor);
     }
 
     private class CMRendererObserver extends ContentObserver {
@@ -227,6 +231,10 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
 
         void register() {
             ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                    Settings.Secure.getUriFor(Settings.Secure.PULSE_ACCENT_COLOR_ENABLED), false,
+                    this,
+                    UserHandle.USER_ALL);
             resolver.registerContentObserver(
                     Settings.Secure.getUriFor(Settings.Secure.FLING_PULSE_COLOR), false, this,
                     UserHandle.USER_ALL);
@@ -255,20 +263,26 @@ public class SolidLineRenderer extends Renderer implements ColorAnimator.ColorAn
 
         public void updateSettings() {
             ContentResolver resolver = mContext.getContentResolver();
+            mPulseAccentColorEnabled = Settings.Secure.getIntForUser(resolver,
+                    Settings.Secure.PULSE_ACCENT_COLOR_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
             mLavaLampEnabled = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.FLING_PULSE_LAVALAMP_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
             mColor = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.FLING_PULSE_COLOR,
                     Color.WHITE,
                     UserHandle.USER_CURRENT);
-            if (!mLavaLampEnabled) {
+            mAccentColor = mContext.getResources().getColor(R.color.pulseAccentColor);
+            if (mPulseAccentColorEnabled) {
+                mPaint.setColor(mAccentColor);
+            }
+            if (!mLavaLampEnabled && !mPulseAccentColorEnabled) {
                 mPaint.setColor(mColor);
             }
             int lavaLampSpeed = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.PULSE_LAVALAMP_SOLID_SPEED, 10 * 1000,
                     UserHandle.USER_CURRENT);
             mLavaLamp.setAnimationTime(lavaLampSpeed);
-            if (mLavaLampEnabled && mIsValidStream) {
+            if (mLavaLampEnabled && mIsValidStream && !mPulseAccentColorEnabled) {
                 mLavaLamp.start();
             } else {
                 mLavaLamp.stop();
